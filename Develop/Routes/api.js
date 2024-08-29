@@ -40,3 +40,25 @@ router.post("/api/notes", async (req, res) => {
         res.status(500).json({error: "Note failed to save"});
     }
 });
+
+router.delete("/api/notes/:id", async (req,res) => {
+    try {
+        const {id} = req.params;
+        const file = await fs.readFile('./db/db.json', 'utf-8');
+        let db = JSON.parse(file);
+
+        const newDb = db.filter(note => note.id !==id); 
+
+        if (db.lenght === newDb.lenght) {
+            return res.status (404).json ({ error : "Note not found"});
+        }
+        await fs.writeFile('./db/db.jason', JSON.stringify(newDb));
+        res.json ({message:"Note was deleted"});
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({error:"unable to delete note"});
+    }
+});
+
+module.exports = router;
